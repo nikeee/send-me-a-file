@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Send-Me-A-File</title>
+<style>
+html { font-family: 'Public Sans', 'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, Ubuntu, Arial, sans-serif; }
+body {
+	padding: 10px;
+	background-color: #f6f8fa;
+}
+h1, h2, h3, h4, h5, h6 { margin-top: 0; }
+@media only screen and (min-width: 650px) {
+	body {
+		width: 650px;
+		margin-right: auto;
+		margin-left: auto;
+	}
+}
+
+section {
+	background-color: #fff;
+	padding: 16px;
+	border-radius: 3px;
+	border: 1px solid #e1e4e8;
+	margin-bottom: 16px;
+}
+
+code {
+	white-space: pre-line;
+	background-color: #f6f8fa;
+	display: block;
+	padding: 10px;
+	border-radius: 3px;
+}
+
+.spacer {
+	display: flex;
+	margin: 16px 0;
+}
+.spacer::before, .spacer::after {
+	content: "";
+	flex: 1;
+	margin: 0 10px 0.5em 10px;
+	border-bottom: 1px solid #eaecef;
+}
+
+button {
+	display: block;
+	width: 100%;
+	height: 32px;
+	color: #fff;
+	background-color: #12bc00;
+
+	border: 2px solid transparent;
+	border-radius: 2px;
+
+	cursor: pointer;
+	font-weight: bold;
+}
+button::-moz-focus-inner { outline: 0; border: 0; }
+button:hover, button:focus, button:focus-within {
+	box-shadow: 0 0 0 4px rgba(48, 230, 11, 0.3);
+	background-color: #058b00;
+}
+button:active {
+	border-color: #5cb860;
+	outline: none;
+}
+
+.file-selector input[type="file"] {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+.file-selector label {
+	display: block;
+	height: 64px;
+	border: 2px solid #e1e4e8;
+	border-radius: 3px;
+	background-color: #fafbfc;
+	padding: 8px;
+	margin: 8px 0;
+
+	cursor: pointer;
+
+	text-align: center;
+	line-height: 3.5;
+}
+.file-selector input[type="file"]:focus + label,
+.file-selector label:focus,
+.file-selector label:hover {
+	border-style: dashed;
+	border-color: #8c97a6;
+}
+
+.note:empty { display: none; }
+</style>
+
+<h1>Send-Me-A-File</h1>
+<section class="note">%note%</section>
+<section>
+	<h2>Send via Upload</h2>
+	<form method="post" enctype="multipart/form-data">
+		<div class="file-selector">
+			<input type="file" name="file" id="file" required autofocus>
+			<label for="file">Select file</label>
+		</div>
+		<div>
+			<button>Send</button>
+		</div>
+	</form>
+</section>
+
+<h3 class="spacer">or</h1>
+
+<section>
+	<h2>Send via Command Line</h2>
+		<div>
+<code># Using <a href="https://curl.haxx.se">cURL</a>
+curl "<script>document.write(document.location.href);</script>" -F file=@/path/to/file.zip
+
+# Using <a href="https://httpie.org">HTTPie</a>
+http -f POST "<script>document.write(document.location.href);</script>" file@/path/to/file.zip
+</code>
+		</div>
+</section>

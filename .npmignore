@@ -1,0 +1,8 @@
+*.ts
+!*.d.ts
+.editorconfig
+.gitignore
+.travis.yml
+*.js.map
+*.log
+*.json

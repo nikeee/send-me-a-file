@@ -1,0 +1,16 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{ts,json,js,html}]
+charset = utf-8
+
+[*.{ts,js,json,html}]
+indent_style = tab
+tab_width = 4
+
+[package.json]
+indent_style = space
+indent_size = 2

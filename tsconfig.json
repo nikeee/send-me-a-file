@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "es2017",
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"lib": [
+			"es2018",
+			"es2019.array"
+		],
+		"skipLibCheck": true,
+		"outDir": "lib",
+		"strict": true,
+		"sourceMap": true,
+		"declaration": true
+	}
+}
