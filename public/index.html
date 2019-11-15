@@ -68,6 +68,12 @@ button:active {
 	border-color: #5cb860;
 	outline: none;
 }
+button:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+	border-width: 0px;
+	box-shadow: #8c97a6;
+}
 
 .file-selector input[type="file"] {
 	width: 0.1px;
@@ -105,13 +111,13 @@ button:active {
 <section class="note">%note%</section>
 <section>
 	<h2>Send via Upload</h2>
-	<form method="post" enctype="multipart/form-data">
+	<form method="post" enctype="multipart/form-data" onsubmit="document.getElementById('send').disabled = true">
 		<div class="file-selector">
 			<input type="file" name="file" id="file" required autofocus>
 			<label for="file">Select file</label>
 		</div>
 		<div>
-			<button>Send</button>
+			<button id="send">Send</button>
 		</div>
 	</form>
 </section>
