@@ -21,7 +21,7 @@
     "simple"
   ],
   "author": "Niklas Mollenhauer",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "dependencies": {
     "colors": "^1.4.0",
     "filesize": "^6.0.1",
