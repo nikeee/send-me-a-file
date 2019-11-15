@@ -15,7 +15,7 @@ export function isRequestingFromBrowser(req: Request): boolean {
 }
 
 export function isLoopback(iface: NetworkInterfaceInfo): boolean {
-	return !!(iface.cidr?.endsWith("/8") && iface.cidr?.startsWith("127."));
+	return !!(iface.cidr ?.endsWith("/8") && iface.cidr ?.startsWith("127."));
 }
 
 export function readPublicFile(fileName: string): Promise<string> {
@@ -29,6 +29,19 @@ export function indentText(text: string, char: string = "\t", amount: number = 1
 		.split("\n")
 		.map(l => indent + l)
 		.join("\n");
+}
+
+export type Protocol = "http" | "https";
+
+export function getServerUrlFromRequest(protocol: Protocol, req: Request, token: string, defaultIncludingPort: string): string {
+	const hostHeader = req.headers.host;
+
+	if (hostHeader) {
+		const hostHeaderWithoutTrailingSlash = hostHeader.trimRight().replace(/\/+$/, "") // See: https://stackoverflow.com/a/6680877
+
+		return protocol + "://" + hostHeaderWithoutTrailingSlash + "/" + token;
+	}
+	return protocol + "://" + defaultIncludingPort;
 }
 
 /**

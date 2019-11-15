@@ -10,7 +10,7 @@ import * as yargs from "yargs";
 import { partial } from "filesize";
 
 import * as qr from "./qr";
-import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile } from "./utils";
+import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, Protocol, getServerUrlFromRequest } from "./utils";
 
 const fs = oldFs.promises;
 
@@ -85,7 +85,7 @@ const server = restify.createServer({
 
 const hashingFunction = argv.hashingFunction.toLowerCase();
 
-const protocol = "http";
+const protocol: Protocol = "http";
 
 server.use(restify.plugins.multipartBodyParser({
 	hash: hashingFunction,
@@ -109,7 +109,11 @@ server.get("/:token", async (req, res, next) => {
 			? "<h2>Note from receiver</h2>\n" + argv.note
 			: "";
 
-		const index = indexTemplate.replace(/%note%/gi, htmlNote);
+		const href = getServerUrlFromRequest(protocol, req, token, "<script>document.write(document.location.href);</script>");
+
+		const index = indexTemplate
+		.replace(/%note%/gi, htmlNote)
+		.replace(/%host%/gi, href);
 
 		res.contentType = "text/html";
 		res.end(index);
@@ -118,12 +122,13 @@ server.get("/:token", async (req, res, next) => {
 			? "\n" + colors.dim("Note from the receiver:\n") + colors.bold(argv.note)
 			: "";
 
+		const href = getServerUrlFromRequest(protocol, req, token, "<this address>:<port>");
 
 		const content = [
 			colors.yellow("Someone requested a file from you!"),
 			"",
 			colors.dim("You can simply use curl to upload it:"),
-			`  ${colors.bold(`curl "${protocol}://<this address>/${token}" -F file=@/path/to/file.zip`)}`,
+			`  ${colors.bold(`curl "${href}" -F file=@/path/to/file.zip`)}`,
 			"",
 			"...or open this URL in your browser.",
 			note,
@@ -272,7 +277,7 @@ function formatInfo(info: UploadInfo, startPadding: number): string {
 	return colors.dim(info.name.padStart(startPadding) + ": ") + colors.bold(valueToPrint);
 }
 
-async function printEndpoint(protocol: "http" | "https", iface: os.NetworkInterfaceInfo, port: number, token: string): Promise<void> {
+async function printEndpoint(protocol: Protocol, iface: os.NetworkInterfaceInfo, port: number, token: string): Promise<void> {
 	console.log(`  ${protocol}://${iface.address}:${colors.green(port.toString())}/${token}`);
 
 	if (isLoopback(iface))

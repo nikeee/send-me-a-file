@@ -116,16 +116,16 @@ button:active {
 	</form>
 </section>
 
-<h3 class="spacer">or</h1>
+<h3 class="spacer">or</h3>
 
 <section>
 	<h2>Send via Command Line</h2>
 		<div>
 <code># Using <a href="https://curl.haxx.se">cURL</a>
-curl "<script>document.write(document.location.href);</script>" -F file=@/path/to/file.zip
+curl "%host%" -F file=@/path/to/file.zip
 
 # Using <a href="https://httpie.org">HTTPie</a>
-http -f POST "<script>document.write(document.location.href);</script>" file@/path/to/file.zip
+http -f POST "%host%" file@/path/to/file.zip
 </code>
 		</div>
 </section>
