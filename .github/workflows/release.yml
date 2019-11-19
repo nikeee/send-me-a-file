@@ -16,19 +16,23 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 13.x
+        registry-url: https://registry.npmjs.org/
+
     - name: npm install, build, and test
       run: |
         npm ci
-        npm run compile --if-present
+        npm run compile
         npm test
       env:
         CI: true
 
-    - name: Make stable release to npm
-      uses: epeli/npm-release@v1
-      with:
-          type: stable
-          token: ${{ secrets.NPM_AUTH_TOKEN }}
+    - name: Release to NPM
+      run: |
+        npm ci
+        npm run compile
+        npm publish
+      env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
     - name: Create Release
       id: create_release
