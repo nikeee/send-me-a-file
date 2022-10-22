@@ -1,6 +1,6 @@
 {
   "name": "smaf",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Receive a single file from another person.",
   "repository": "https://github.com/nikeee/send-me-a-file",
   "main": "lib/index.js",
