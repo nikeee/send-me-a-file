@@ -1,5 +1,6 @@
-import { NetworkInterfaceInfo } from "os";
-import { promises as fs } from "fs";
+import fs from "node:fs/promises";
+import { type NetworkInterfaceInfo } from "node:os";
+
 import * as path from "path";
 import { Request } from "restify";
 

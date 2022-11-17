@@ -1,5 +1,5 @@
-import * as os from "os";
-import * as oldFs from "fs";
+import * as os from "node:os";
+import * as oldFs from "node:fs";
 
 import { default as colors } from "colors";
 import * as restify from "restify";
@@ -253,10 +253,10 @@ async function main() {
 
 		const validInterfaces = Object.values(interfaces)
 			.flat()
-			.filter(iface => iface.family === "IPv4");
+			.filter(iface => iface?.family === "IPv4");
 
 		for(const iface of validInterfaces) {
-			await printEndpoint(protocol, iface, argv.port, token);
+			await printEndpoint(protocol, iface!, argv.port, token);
 		}
 
 		console.log(colors.yellow(`Waiting for someone to upload ${colors.blue(argv.fileName)}`));
