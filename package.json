@@ -25,9 +25,9 @@
   "license": "GPL-3.0",
   "dependencies": {
     "colors": "^1.4.0",
-    "filesize": "^10.0.5",
+    "filesize": "^10.0.6",
     "qrcode": "^1.5.1",
-    "restify": "^9.0.0",
+    "restify": "^11.0.0",
     "restify-errors": "^8.0.2",
     "yargs": "^15.3.1"
   },
@@ -35,12 +35,12 @@
     "@types/colors": "^1.2.1",
     "@types/filesize": "^5.0.0",
     "@types/formidable": "^1.0.31",
-    "@types/node": "^18.11.9",
+    "@types/node": "^18.11.18",
     "@types/qrcode": "^1.5.0",
     "@types/restify": "^8.5.5",
     "@types/restify-errors": "^4.3.4",
     "@types/yargs": "^15.0.4",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.9.3"
+    "rimraf": "^4.1.1",
+    "typescript": "^4.9.4"
   }
 }
