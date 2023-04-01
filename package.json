@@ -29,7 +29,7 @@
     "qrcode": "^1.5.1",
     "restify": "^11.0.0",
     "restify-errors": "^8.0.2",
-    "yargs": "^15.4.1"
+    "yargs": "^17.7.1"
   },
   "devDependencies": {
     "@types/colors": "^1.2.1",
@@ -39,7 +39,7 @@
     "@types/qrcode": "^1.5.0",
     "@types/restify": "^8.5.5",
     "@types/restify-errors": "^4.3.4",
-    "@types/yargs": "^15.0.15",
+    "@types/yargs": "^17.0.24",
     "rimraf": "^4.1.1",
     "typescript": "^5.0.3"
   }
