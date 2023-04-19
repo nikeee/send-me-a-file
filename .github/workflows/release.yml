@@ -7,30 +7,29 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 19.x
+        node-version: 20.x
         registry-url: https://registry.npmjs.org/
 
-    - name: npm install, build, and test
-      run: |
-        npm ci
-        npm run compile
-        npm test
+    - run: npm ci
+    - run: npm run compile
+    - run: npm test
       env:
         CI: true
 
-    - name: Release to NPM
-      run: |
-        npm ci
-        npm run compile
-        npm publish
+    - run: npm ci
+    - run: npm run compile
+    - run: npm publish --provenance --access public
       env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
