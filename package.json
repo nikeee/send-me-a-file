@@ -35,7 +35,7 @@
     "@types/colors": "^1.2.1",
     "@types/filesize": "^5.0.0",
     "@types/formidable": "^1.0.31",
-    "@types/node": "^18.11.18",
+    "@types/node": "^20.2.5",
     "@types/qrcode": "^1.5.0",
     "@types/restify": "^8.5.5",
     "@types/restify-errors": "^4.3.4",
