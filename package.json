@@ -40,7 +40,7 @@
     "@types/restify": "^8.5.5",
     "@types/restify-errors": "^4.3.4",
     "@types/yargs": "^15.0.15",
-    "rimraf": "^5.0.0",
+    "rimraf": "^6.0.1",
     "typescript": "^5.0.3"
   }
 }
