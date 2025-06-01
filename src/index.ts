@@ -12,7 +12,7 @@ import { partial } from "filesize";
 import * as qr from "./qr.js";
 import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, type Protocol, getServerUrlFromRequest } from "./utils.js";
 
-const argv = yargs
+const argv = await yargs(hideBin(process.argv))
 	.positional("fileName", { type: "string" })
 	.option("port", {
 		alias: "p",
@@ -68,7 +68,7 @@ const argv = yargs
 	.string("fileName")
 	.help()
 	.alias("h", "help")
-	.parse(hideBin(process.argv))
+	.parse()
 
 const formatFileSize = partial({ standard: "iec" });
 
