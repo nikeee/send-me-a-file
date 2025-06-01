@@ -24,7 +24,7 @@ export function readPublicFile(fileName: string): Promise<string> {
 	return fs.readFile(localPath, { encoding: "utf8" });
 }
 
-export function indentText(text: string, char: string = "\t", amount: number = 1): string {
+export function indentText(text: string, char = "\t", amount = 1): string {
 	const indent = char.repeat(amount);
 	return text
 		.split("\n")
@@ -40,9 +40,9 @@ export function getServerUrlFromRequest(protocol: Protocol, req: Request, token:
 	if (hostHeader) {
 		const hostHeaderWithoutTrailingSlash = hostHeader.trimRight().replace(/\/+$/, "") // See: https://stackoverflow.com/a/6680877
 
-		return protocol + "://" + hostHeaderWithoutTrailingSlash + "/" + token;
+		return `${protocol}://${hostHeaderWithoutTrailingSlash}/${token}`;
 	}
-	return protocol + "://" + defaultIncludingPort;
+	return `${protocol}://${defaultIncludingPort}`;
 }
 
 /**
