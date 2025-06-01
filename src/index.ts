@@ -1,5 +1,5 @@
 import * as os from "node:os";
-import * as oldFs from "node:fs";
+import * as fs from "node:fs/promises";
 
 import { default as colors } from "colors";
 import * as restify from "restify";
@@ -10,8 +10,6 @@ import { partial } from "filesize";
 
 import * as qr from "./qr.js";
 import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, type Protocol, getServerUrlFromRequest } from "./utils.js";
-
-const fs = oldFs.promises;
 
 const argv = yargs
 	.command("$0 <fileName>", "Receive a file.", args => args.positional("fileName", { type: "string" }))
@@ -295,7 +293,7 @@ async function printEndpoint(protocol: Protocol, iface: os.NetworkInterfaceInfo,
 
 async function checkForFileOverwrite(print: boolean) {
 
-	const fileExists = await fs.access(argv.fileName, oldFs.constants.F_OK | oldFs.constants.W_OK)
+	const fileExists = await fs.access(argv.fileName, fs.constants.F_OK | fs.constants.W_OK)
 		.then(() => true)
 		.catch(() => false)
 
