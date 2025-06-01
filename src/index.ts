@@ -4,12 +4,12 @@ import * as oldFs from "node:fs";
 import { default as colors } from "colors";
 import * as restify from "restify";
 import * as errors from "restify-errors";
-import { File } from "formidable";
+import type { File } from "formidable";
 import * as yargs from "yargs";
 import { partial } from "filesize";
 
 import * as qr from "./qr";
-import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, Protocol, getServerUrlFromRequest } from "./utils";
+import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, type Protocol, getServerUrlFromRequest } from "./utils";
 
 const fs = oldFs.promises;
 
@@ -74,9 +74,7 @@ const argv = yargs
 
 const formatFileSize = partial({ standard: "iec" });
 
-const token = !!argv.noToken
-	? ""
-	: (argv.token ?? randomString());
+const token = argv.noToken ? "" : (argv.token ?? randomString());
 
 const server = restify.createServer({
 	name: "send-me-a-file",
@@ -104,8 +102,8 @@ server.get("/:token", async (req, res, next) => {
 	if (isRequestingFromBrowser(req)) {
 		const indexTemplate = await readPublicFile("index.html");
 
-		const htmlNote = !!argv.note
-			? "<h2>Note from receiver</h2>\n" + argv.note
+		const htmlNote = argv.note
+			? `<h2>Note from receiver</h2>\n${argv.note}`
 			: "";
 
 		const href = getServerUrlFromRequest(protocol, req, token, "<script>document.write(document.location.href);</script>");
@@ -117,8 +115,8 @@ server.get("/:token", async (req, res, next) => {
 		res.contentType = "text/html";
 		res.end(index);
 	} else {
-		const note = !!argv.note
-			? "\n" + colors.dim("Note from the receiver:\n") + colors.bold(argv.note)
+		const note = argv.note
+			? `\n${colors.dim("Note from the receiver:\n")}${colors.bold(argv.note)}`
 			: "";
 
 		const href = getServerUrlFromRequest(protocol, req, token, "<this address>:<port>");
@@ -134,7 +132,7 @@ server.get("/:token", async (req, res, next) => {
 		].join("\n");
 
 		res.contentType = "text/plain";
-		res.end(indentText(content, "  ") + "\n");
+		res.end(`${indentText(content, "  ")}\n`);
 	}
 	return next();
 });
@@ -180,7 +178,7 @@ server.post("/:token", async (req, res, next) => {
 			name: "Type",
 			content: uploadedFile.type,
 		}, {
-			name: hashingFunction + " hash",
+			name: `${hashingFunction} hash`,
 			 content: uploadedFile.hash,
 		}, {
 			name: "Last modified",
@@ -190,9 +188,9 @@ server.post("/:token", async (req, res, next) => {
 	const longestKeyLength = Math.max(...info.map(i => i.name.length));
 
 	console.log();
-	info.forEach(i => {
+	for(const i of info) {
 		console.log(formatInfo(i, longestKeyLength + 4));
-	});
+	}
 
 	console.log();
 	console.log("Bye!");
@@ -273,7 +271,7 @@ function formatInfo(info: UploadInfo, startPadding: number): string {
 		: typeof info.content === "string"
 			? info.content
 			: info.content.toString();
-	return colors.dim(info.name.padStart(startPadding) + ": ") + colors.bold(valueToPrint);
+	return colors.dim(`${info.name.padStart(startPadding)}: `) + colors.bold(valueToPrint);
 }
 
 async function printEndpoint(protocol: Protocol, iface: os.NetworkInterfaceInfo, port: number, token: string): Promise<void> {
@@ -287,7 +285,7 @@ async function printEndpoint(protocol: Protocol, iface: os.NetworkInterfaceInfo,
 	const indentedQrCode = indentText(terimalQrCode, "    ");
 
 	console.log();
-	console.log("    " + colors.dim("Upload via cURL:"));
+	console.log(`    ${colors.dim("Upload via cURL:")}`);
 	console.log(colors.bold(`    curl "${protocol}://${iface.address}:${port}/${token}" -F file=@/path/to/file.zip`));
 	console.log();
 	console.log(indentedQrCode);
