@@ -173,16 +173,16 @@ server.post("/:token", async (req, res, next) => {
 			content: argv.fileName,
 		}, {
 			name: "Client-Supplied file name",
-			content: uploadedFile.name,
+			content: uploadedFile.name ?? undefined,
 		}, {
 			name: "Type",
-			content: uploadedFile.type,
+			content: uploadedFile.type ?? undefined,
 		}, {
 			name: `${hashingFunction} hash`,
-			 content: uploadedFile.hash,
+			 content: uploadedFile.hash ?? undefined,
 		}, {
 			name: "Last modified",
-			 content: uploadedFile.lastModifiedDate,
+			 content: uploadedFile.lastModifiedDate ?? undefined,
 		},
 	];
 	const longestKeyLength = Math.max(...info.map(i => i.name.length));
@@ -207,7 +207,7 @@ server.post("/:token", async (req, res, next) => {
 		const info: UploadInfo[] = [
 			{
 				name: `${hashingFunction} hash of the file received`,
-				content: uploadedFile.hash,
+				content: uploadedFile.hash ?? undefined,
 			}, {
 				name: "Size",
 				content: `${uploadedFile.size} bytes (${formatFileSize(uploadedFile.size)})`,
@@ -254,6 +254,7 @@ async function main() {
 			.filter(iface => iface?.family === "IPv4");
 
 		for(const iface of validInterfaces) {
+			// biome-ignore lint/style/noNonNullAssertion: :shrug:
 			await printEndpoint(protocol, iface!, argv.port, token);
 		}
 
