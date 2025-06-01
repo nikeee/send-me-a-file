@@ -5,14 +5,15 @@ import { default as colors } from "colors";
 import * as restify from "restify";
 import * as errors from "restify-errors";
 import type { File } from "formidable";
-import * as yargs from "yargs";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { partial } from "filesize";
 
 import * as qr from "./qr.js";
 import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, type Protocol, getServerUrlFromRequest } from "./utils.js";
 
 const argv = yargs
-	.command("$0 <fileName>", "Receive a file.", args => args.positional("fileName", { type: "string" }))
+	.positional("fileName", { type: "string" })
 	.option("port", {
 		alias: "p",
 		type: "number",
@@ -67,8 +68,7 @@ const argv = yargs
 	.string("fileName")
 	.help()
 	.alias("h", "help")
-	.wrap(yargs.terminalWidth())
-	.argv;
+	.parse(hideBin(process.argv))
 
 const formatFileSize = partial({ standard: "iec" });
 
