@@ -1,5 +1,6 @@
 import * as qrcode from "qrcode";
-import { bgWhite, black } from "colors";
+import colors from "colors";
+const { bgWhite, black } = colors; // hack for CommonJs
 
 export function terminal(content: string): Promise<string> {
 	return new Promise((res, rej) => {
