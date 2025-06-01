@@ -4,6 +4,7 @@
   "description": "Receive a single file from another person in the same network.",
   "repository": "https://github.com/nikeee/send-me-a-file",
   "main": "lib/index.js",
+  "type": "module",
   "bin": {
     "smaf": "bin/smaf"
   },

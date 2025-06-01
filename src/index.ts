@@ -8,8 +8,8 @@ import type { File } from "formidable";
 import * as yargs from "yargs";
 import { partial } from "filesize";
 
-import * as qr from "./qr";
-import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, type Protocol, getServerUrlFromRequest } from "./utils";
+import * as qr from "./qr.js";
+import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, type Protocol, getServerUrlFromRequest } from "./utils.js";
 
 const fs = oldFs.promises;
 

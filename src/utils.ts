@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
-import { type NetworkInterfaceInfo } from "node:os";
+import type { NetworkInterfaceInfo } from "node:os";
+import * as path from "node:path";
 
-import * as path from "path";
-import { Request } from "restify";
+import type { Request } from "restify";
 
 
 const cliUserAgentStarts = [
