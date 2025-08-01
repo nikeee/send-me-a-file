@@ -26,7 +26,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "colors": "^1.4.0",
-    "filesize": "^10.1.6",
+    "filesize": "^11.0.2",
     "qrcode": "^1.5.4",
     "restify": "^11.1.0",
     "restify-errors": "^8.0.2",
