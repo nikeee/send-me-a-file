@@ -30,7 +30,7 @@
     "qrcode": "^1.5.4",
     "restify": "^11.1.0",
     "restify-errors": "^8.0.2",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@types/colors": "^1.2.4",
