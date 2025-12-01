@@ -35,7 +35,7 @@
   "devDependencies": {
     "@types/colors": "^1.2.4",
     "@types/filesize": "^5.0.2",
-    "@types/formidable": "^1.2.5",
+    "@types/formidable": "^3.4.6",
     "@types/node": "^24.9.2",
     "@types/qrcode": "^1.5.6",
     "@types/restify": "^8.5.12",
