@@ -42,6 +42,6 @@
     "@types/restify-errors": "^4.3.4",
     "@types/yargs": "^17.0.33",
     "rimraf": "^6.1.3",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   }
 }
