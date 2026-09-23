@@ -1,14 +1,15 @@
 {
 	"compilerOptions": {
-		"target": "es2022",
+		"target": "es2024",
 		"module": "nodenext",
 		"esModuleInterop": true,
 		"moduleResolution": "nodenext",
 		"lib": [
-			"es2022"
+			"es2024"
 		],
 		"skipLibCheck": true,
-		"outDir": "lib",
+		"outDir": "./lib",
+		"rootDir": "./src",
 		"strict": true,
 		"sourceMap": true,
 		"declaration": true
