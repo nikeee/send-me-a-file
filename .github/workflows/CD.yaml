@@ -23,13 +23,13 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run build
-      - run: npm test
+      - run: node --run build
+      - run: node --run test
         env:
           CI: true
 
       - run: npm ci
-      - run: npm run build
+      - run: node --run build
       - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
