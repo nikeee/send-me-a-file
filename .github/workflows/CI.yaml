@@ -20,7 +20,7 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm ci
-          node --run build --if-present
+          node --run build
           node --run test
         env:
           CI: true
