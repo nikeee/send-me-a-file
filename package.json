@@ -1,6 +1,6 @@
 {
   "name": "smaf",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Receive a single file from another person in the same network.",
   "keywords": [
     "a",
