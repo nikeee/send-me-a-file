@@ -38,9 +38,11 @@ export function getServerUrlFromRequest(protocol: Protocol, req: IncomingMessage
 	const hostHeader = req.headers.host;
 
 	if (hostHeader) {
-		const hostHeaderWithoutTrailingSlash = hostHeader.trimRight().replace(/\/+$/, "") // See: https://stackoverflow.com/a/6680877
-
-		return `${protocol}://${hostHeaderWithoutTrailingSlash}/${token}`;
+		try {
+			return new URL(`/${token}`, `${protocol}://${hostHeader}`).href;
+		} catch {
+			// Malformed host header, use default
+		}
 	}
 	return `${protocol}://${defaultIncludingPort}`;
 }
