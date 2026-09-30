@@ -1,74 +1,94 @@
 import * as os from "node:os";
+import { parseArgs } from "node:util";
 import * as fs from "node:fs/promises";
 
 import { default as colors } from "colors";
 import * as restify from "restify";
 import * as errors from "restify-errors";
 import type { File } from "formidable";
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
 import { partial } from "filesize";
 
 import * as qr from "./qr.js";
 import { randomString, isLoopback, indentText, isRequestingFromBrowser, readPublicFile, type Protocol, getServerUrlFromRequest } from "./utils.js";
 
-const argv = await yargs(hideBin(process.argv))
-	.positional("fileName", { type: "string" })
-	.option("port", {
-		alias: "p",
-		type: "number",
-		default: 8080,
-	})
-	.option("maxFileSize", {
-		type: "number",
-		default: 10 * 1024 * 1024 * 1024, // 10GiB
-	})
-	.option("hashingFunction", {
-		type: "string",
-		describe: "Get a list via `openssl list -digest-algorithms`",
-		default: "sha256",
-	})
-	.option("tempDir", {
-		type: "string",
-		describe: "Directory to store the file temporarily",
-		default: os.tmpdir(),
-	})
-	.option("noEmptyFiles", {
-		type: "boolean",
-		describe: "If the user uploads an empty file, dismiss it.",
-		default: false,
-	})
-	.option("overwrite", {
-		type: "boolean",
-		describe: "Overwrite <fileName> if it already exists.",
-		default: true,
-	})
-	.option("noToken", {
-		type: "boolean",
-		describe: "Just use a link without any session-specific token.",
-		default: undefined,
-		conflicts: ["token"],
-	})
-	.option("token", {
-		type: "string",
-		describe: "The session-specific token to use. Will be generated randomly if omitted.",
-		default: undefined,
-		conflicts: ["noToken"],
-	})
-	.option("note", {
-		type: "string",
-		describe: "leave a note for the sender. Will be displayed in the browser.",
-		default: "",
-	})
-	.option("fileName", {
-		type: "string",
-		describe: "Target file name.",
-	})
-	.require("fileName")
-	.string("fileName")
-	.help()
-	.alias("h", "help")
-	.parse()
+const helpText = `Usage: smaf <fileName> [options]
+
+Arguments:
+  fileName             Target file name.
+
+Options:
+  -p, --port           [number] [default: 8080]
+      --maxFileSize    [number] [default: 10 GiB]
+      --hashingFunction  Get a list via \`openssl list -digest-algorithms\` [default: "sha256"]
+      --tempDir        Directory to store the file temporarily [default: os.tmpdir()]
+      --noEmptyFiles   If the user uploads an empty file, dismiss it. [default: false]
+      --overwrite      Overwrite <fileName> if it already exists. Use --no-overwrite to disable. [default: true]
+      --noToken        Just use a link without any session-specific token.
+      --token          The session-specific token to use. Will be generated randomly if omitted.
+      --note           Leave a note for the sender. Will be displayed in the browser. [default: ""]
+  -h, --help           Show help`;
+
+function parseNumber(name: string, value: string): number {
+	const n = Number(value);
+	if (value.trim() === "" || Number.isNaN(n)) {
+		exitWithError(`Invalid value for --${name}: ${value}`);
+	}
+	return n;
+}
+
+function exitWithError(message: string): never {
+	console.error(`${helpText}\n\n${message}`);
+	process.exit(1);
+}
+
+const { values, positionals } = (() => {
+	try {
+		return parseArgs({
+			allowPositionals: true,
+			allowNegative: true,
+			options: {
+				port: { type: "string", short: "p" },
+				maxFileSize: { type: "string" },
+				hashingFunction: { type: "string" },
+				tempDir: { type: "string" },
+				noEmptyFiles: { type: "boolean" },
+				overwrite: { type: "boolean" },
+				noToken: { type: "boolean" },
+				token: { type: "string" },
+				note: { type: "string" },
+				help: { type: "boolean", short: "h" },
+			},
+		});
+	} catch (e) {
+		return exitWithError((e as Error).message);
+	}
+})();
+
+if (values.help) {
+	console.log(helpText);
+	process.exit(0);
+}
+
+if (positionals.length !== 1) {
+	exitWithError(positionals.length === 0 ? "Missing required argument: fileName" : "Too many arguments, expected exactly one fileName");
+}
+
+if (values.noToken && values.token !== undefined) {
+	exitWithError("Arguments noToken and token are mutually exclusive");
+}
+
+const argv = {
+	fileName: positionals[0]!,
+	port: values.port === undefined ? 8080 : parseNumber("port", values.port),
+	maxFileSize: values.maxFileSize === undefined ? 10 * 1024 * 1024 * 1024 : parseNumber("maxFileSize", values.maxFileSize), // 10GiB
+	hashingFunction: values.hashingFunction ?? "sha256",
+	tempDir: values.tempDir ?? os.tmpdir(),
+	noEmptyFiles: values.noEmptyFiles ?? false,
+	overwrite: values.overwrite ?? true,
+	noToken: values.noToken,
+	token: values.token,
+	note: values.note ?? "",
+};
 
 const formatFileSize = partial({ standard: "iec" });
 
