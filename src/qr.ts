@@ -1,6 +1,5 @@
 import * as qrcode from "qrcode";
-import colors from "colors";
-const { bgWhite, black } = colors; // hack for CommonJs
+import { styleText } from "node:util";
 
 export function terminal(content: string): Promise<string> {
 	return new Promise((res, rej) => {
@@ -8,7 +7,7 @@ export function terminal(content: string): Promise<string> {
 		qrcode.toString(content, (err, qr) => {
 			if (err) return rej(rej);
 
-			const text = bgWhite(black(qr));
+			const text = styleText(["bgWhite", "black"], qr);
 			return res(text);
 		});
 	});

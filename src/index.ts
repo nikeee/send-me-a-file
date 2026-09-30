@@ -1,8 +1,8 @@
 import * as os from "node:os";
 import { parseArgs } from "node:util";
 import * as fs from "node:fs/promises";
+import { styleText } from "node:util";
 
-import { default as colors } from "colors";
 import * as http from "node:http";
 import formidable from "formidable";
 import { partial } from "filesize";
@@ -123,16 +123,16 @@ async function handleGet(req: http.IncomingMessage, res: http.ServerResponse) {
 		send(res, 200, "text/html", index);
 	} else {
 		const note = argv.note
-			? `\n${colors.dim("Note from the receiver:\n")}${colors.bold(argv.note)}`
+			? `\n${styleText("dim", "Note from the receiver:\n")}${styleText("bold", argv.note)}`
 			: "";
 
 		const href = getServerUrlFromRequest(protocol, req, token, "<this address>:<port>");
 
 		const content = [
-			colors.yellow("Someone requested a file from you!"),
+			styleText("yellow", "Someone requested a file from you!"),
 			"",
-			colors.dim("You can simply use curl to upload it:"),
-			`  ${colors.bold(`curl "${href}" -F file=@/path/to/file.zip`)}`,
+			styleText("dim", "You can simply use curl to upload it:"),
+			`  ${styleText("bold", `curl "${href}" -F file=@/path/to/file.zip`)}`,
 			"",
 			"...or open this URL in your browser.",
 			note,
@@ -224,7 +224,7 @@ async function handlePost(req: http.IncomingMessage, res: http.ServerResponse) {
 		const longestNameLength = Math.max(...info.map(i => i.name.length));
 
 		const textReply = [
-			colors.green("Thanks for the file!"),
+			styleText("green", "Thanks for the file!"),
 			"",
 			...info.map(i => formatInfo(i, longestNameLength + 4)),
 			"",
@@ -286,7 +286,7 @@ async function main() {
 			await printEndpoint(protocol, iface!, argv.port, token);
 		}
 
-		console.log(colors.yellow(`Waiting for someone to upload ${colors.blue(argv.fileName)}`));
+		console.log(styleText("yellow", `Waiting for someone to upload ${styleText("blue", argv.fileName)}`));
 		console.log();
 	});
 }
@@ -300,11 +300,11 @@ function formatInfo(info: UploadInfo, startPadding: number): string {
 		: typeof info.content === "string"
 			? info.content
 			: info.content.toString();
-	return colors.dim(`${info.name.padStart(startPadding)}: `) + colors.bold(valueToPrint);
+	return styleText("dim", `${info.name.padStart(startPadding)}: `) + styleText("bold", valueToPrint);
 }
 
 async function printEndpoint(protocol: Protocol, iface: os.NetworkInterfaceInfo, port: number, token: string): Promise<void> {
-	console.log(`  ${protocol}://${iface.address}:${colors.green(port.toString())}/${token}`);
+	console.log(`  ${protocol}://${iface.address}:${styleText("green", port.toString())}/${token}`);
 
 	if (isLoopback(iface))
 		return;
@@ -314,8 +314,8 @@ async function printEndpoint(protocol: Protocol, iface: os.NetworkInterfaceInfo,
 	const indentedQrCode = indentText(terimalQrCode, "    ");
 
 	console.log();
-	console.log(`    ${colors.dim("Upload via cURL:")}`);
-	console.log(colors.bold(`    curl "${protocol}://${iface.address}:${port}/${token}" -F file=@/path/to/file.zip`));
+	console.log(`    ${styleText("dim", "Upload via cURL:")}`);
+	console.log(styleText("bold", `    curl "${protocol}://${iface.address}:${port}/${token}" -F file=@/path/to/file.zip`));
 	console.log();
 	console.log(indentedQrCode);
 	console.log();

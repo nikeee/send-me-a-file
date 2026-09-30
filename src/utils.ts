@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import type { NetworkInterfaceInfo } from "node:os";
 import * as path from "node:path";
+import { randomInt } from "node:crypto";
 
 import type { IncomingMessage } from "node:http";
 
@@ -16,7 +17,7 @@ export function isRequestingFromBrowser(req: IncomingMessage): boolean {
 }
 
 export function isLoopback(iface: NetworkInterfaceInfo): boolean {
-	return !!(iface.cidr ?.endsWith("/8") && iface.cidr ?.startsWith("127."));
+	return iface.internal;
 }
 
 export function readPublicFile(fileName: string): Promise<string> {
@@ -56,7 +57,7 @@ export function randomString(length: number = 8) {
 	const res = new Array(length);
 
 	for (let i = 0; i < res.length; ++i) {
-		const c = charset[(Math.random() * charset.length) | 0];
+		const c = charset[randomInt(charset.length)];
 		res[i] = c;
 	}
 	return res.join("");
