@@ -3,9 +3,8 @@ import { parseArgs } from "node:util";
 import * as fs from "node:fs/promises";
 
 import { default as colors } from "colors";
-import * as restify from "restify";
-import * as errors from "restify-errors";
-import type { File } from "formidable";
+import * as http from "node:http";
+import formidable from "formidable";
 import { partial } from "filesize";
 
 import * as qr from "./qr.js";
@@ -94,29 +93,20 @@ const formatFileSize = partial({ standard: "iec" });
 
 const token = argv.noToken ? "" : (argv.token ?? randomString());
 
-const server = restify.createServer({
-	name: "send-me-a-file",
-});
-
 const hashingFunction = argv.hashingFunction.toLowerCase();
 
 const protocol: Protocol = "http";
 
-server.use(restify.plugins.multipartBodyParser({
-	hash: hashingFunction,
-	maxFileSize: argv.maxFileSize,
-	uploadDir: argv.tempDir,
-	multiples: false,
-}));
+function send(res: http.ServerResponse, status: number, contentType: string, body: string) {
+	res.writeHead(status, { "Content-Type": contentType });
+	res.end(body);
+}
 
-server.get("/:token", async (req, res, next) => {
-	// TODO: Assertion function
-	if (req.params.token !== token) {
-		return next(new errors.BadRequestError("Invalid token provided."));
-	}
+function sendError(res: http.ServerResponse, status: number, message: string) {
+	send(res, status, "application/json", JSON.stringify({ code: status === 400 ? "BadRequest" : "InternalServer", message }));
+}
 
-	res.writeHead(200);
-
+async function handleGet(req: http.IncomingMessage, res: http.ServerResponse) {
 	if (isRequestingFromBrowser(req)) {
 		const indexTemplate = await readPublicFile("index.html");
 
@@ -130,8 +120,7 @@ server.get("/:token", async (req, res, next) => {
 		.replace(/%note%/gi, htmlNote)
 		.replace(/%host%/gi, href);
 
-		res.contentType = "text/html";
-		res.end(index);
+		send(res, 200, "text/html", index);
 	} else {
 		const note = argv.note
 			? `\n${colors.dim("Note from the receiver:\n")}${colors.bold(argv.note)}`
@@ -149,37 +138,44 @@ server.get("/:token", async (req, res, next) => {
 			note,
 		].join("\n");
 
-		res.contentType = "text/plain";
-		res.end(`${indentText(content, "  ")}\n`);
+		send(res, 200, "text/plain", `${indentText(content, "  ")}\n`);
 	}
-	return next();
-});
+}
 
 interface UploadInfo {
 	name: string;
 	content: string | number | boolean | object | undefined;
 }
 
-server.post("/:token", async (req, res, next) => {
-	// TODO: Assertion function
-	if (req.params.token !== token) {
-		return next(new errors.BadRequestError("Invalid token provided."));
+async function handlePost(req: http.IncomingMessage, res: http.ServerResponse) {
+	const form = formidable({
+		hashAlgorithm: hashingFunction,
+		maxFileSize: argv.maxFileSize,
+		maxTotalFileSize: argv.maxFileSize,
+		uploadDir: argv.tempDir,
+		multiples: false,
+	});
+
+	let uploadedFile: formidable.File | undefined;
+	try {
+		const [, files] = await form.parse(req);
+		uploadedFile = files.file?.[0];
+	} catch (e) {
+		return sendError(res, 400, (e as Error).message);
 	}
 
-	// TODO: Enhance restify.RequestFileInterface
-	const uploadedFile = req.files?.file as File | undefined;
 	if (!uploadedFile) { // TODO: Assertion function
-		return next(new errors.BadRequestError("No file uploaded"));
+		return sendError(res, 400, "No file uploaded");
 	}
 
 	if (argv.noEmptyFiles && uploadedFile.size <= 0) {
 		console.error("User uploaded an empty file, skipping.");
-		return next(new errors.BadRequestError("Uploaded empty file."));
+		return sendError(res, 400, "Uploaded empty file.");
 	}
 
 	await checkForFileOverwrite(false);
 
-	await fs.rename(uploadedFile.path, argv.fileName);
+	await fs.rename(uploadedFile.filepath, argv.fileName);
 
 	console.log("Someone uploaded a file!");
 	const info: UploadInfo[] = [
@@ -191,16 +187,13 @@ server.post("/:token", async (req, res, next) => {
 			content: argv.fileName,
 		}, {
 			name: "Client-Supplied file name",
-			content: uploadedFile.name ?? undefined,
+			content: uploadedFile.originalFilename ?? undefined,
 		}, {
 			name: "Type",
-			content: uploadedFile.type ?? undefined,
+			content: uploadedFile.mimetype ?? undefined,
 		}, {
 			name: `${hashingFunction} hash`,
 			 content: uploadedFile.hash ?? undefined,
-		}, {
-			name: "Last modified",
-			 content: uploadedFile.lastModifiedDate ?? undefined,
 		},
 	];
 	const longestKeyLength = Math.max(...info.map(i => i.name.length));
@@ -213,14 +206,10 @@ server.post("/:token", async (req, res, next) => {
 	console.log();
 	console.log("Bye!");
 
-	res.writeHead(200);
-
 	if (isRequestingFromBrowser(req)) {
-		res.contentType = "text/html";
 		const thanks = await readPublicFile("thanks.html");
-		res.end(thanks);
+		send(res, 200, "text/html", thanks);
 	} else {
-		res.contentType = "text/plain";
 
 		const info: UploadInfo[] = [
 			{
@@ -243,9 +232,30 @@ server.post("/:token", async (req, res, next) => {
 			"",
 		].join("\n"); // We use this instead of `` because the line encoding of this file could change.
 
-		res.end(textReply);
+		send(res, 200, "text/plain", textReply);
 	}
 	return process.exit();
+}
+
+const server = http.createServer(async (req, res) => {
+	try {
+		const url = new URL(req.url ?? "/", "http://localhost");
+		const requestToken = decodeURIComponent(url.pathname.slice(1));
+
+		if (req.method !== "GET" && req.method !== "POST") {
+			return sendError(res, 400, "Method not allowed");
+		}
+		if (url.pathname.slice(1).includes("/") || requestToken !== token) {
+			return sendError(res, 400, "Invalid token provided.");
+		}
+
+		return await (req.method === "GET" ? handleGet(req, res) : handlePost(req, res));
+	} catch (e) {
+		console.error(e);
+		if (!res.headersSent) {
+			sendError(res, 500, "Internal server error");
+		}
+	}
 });
 
 // TODO: Implement these options:

@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import type { NetworkInterfaceInfo } from "node:os";
 import * as path from "node:path";
 
-import type { Request } from "restify";
+import type { IncomingMessage } from "node:http";
 
 
 const cliUserAgentStarts = [
@@ -10,8 +10,8 @@ const cliUserAgentStarts = [
 	"Wget/",
 	"HTTPie/",
 ]
-export function isRequestingFromBrowser(req: Request): boolean {
-	const ua = req.userAgent();
+export function isRequestingFromBrowser(req: IncomingMessage): boolean {
+	const ua = req.headers["user-agent"] ?? "";
 	return !cliUserAgentStarts.some(prefix => ua.startsWith(prefix));
 }
 
@@ -20,7 +20,7 @@ export function isLoopback(iface: NetworkInterfaceInfo): boolean {
 }
 
 export function readPublicFile(fileName: string): Promise<string> {
-	const localPath = path.join(__dirname, "..", "public", fileName);
+	const localPath = path.join(import.meta.dirname, "..", "public", fileName);
 	return fs.readFile(localPath, { encoding: "utf8" });
 }
 
@@ -34,7 +34,7 @@ export function indentText(text: string, char = "\t", amount = 1): string {
 
 export type Protocol = "http" | "https";
 
-export function getServerUrlFromRequest(protocol: Protocol, req: Request, token: string, defaultIncludingPort: string): string {
+export function getServerUrlFromRequest(protocol: Protocol, req: IncomingMessage, token: string, defaultIncludingPort: string): string {
 	const hostHeader = req.headers.host;
 
 	if (hostHeader) {
