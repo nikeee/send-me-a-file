@@ -8,10 +8,10 @@
 			"es2024"
 		],
 		"skipLibCheck": true,
-		"outDir": "./lib",
-		"rootDir": "./src",
+		"skipDefaultLibCheck": true,
 		"strict": true,
-		"sourceMap": true,
-		"declaration": true
-	}
+		"noEmit": true,
+		"types": ["node", "filesize", "formidable", "qrcode"]
+	},
+	"include": ["src", "tsdown.config.ts"]
 }
