@@ -2,27 +2,27 @@
   "name": "smaf",
   "version": "2.0.3",
   "description": "Receive a single file from another person in the same network.",
+  "keywords": [
+    "a",
+    "file",
+    "me",
+    "send",
+    "simple",
+    "transfer"
+  ],
+  "license": "GPL-3.0",
+  "author": "Niklas Mollenhauer",
   "repository": "https://github.com/nikeee/send-me-a-file",
-  "main": "lib/index.mjs",
-  "type": "module",
   "bin": {
     "smaf": "bin/smaf"
   },
+  "type": "module",
+  "main": "lib/index.mjs",
   "scripts": {
-    "compile": "tsdown",
+    "build": "vp pack",
     "test": "tsc",
-    "prepare": "npm run compile"
+    "prepare": "vp config && npm run build"
   },
-  "keywords": [
-    "send",
-    "me",
-    "a",
-    "file",
-    "transfer",
-    "simple"
-  ],
-  "author": "Niklas Mollenhauer",
-  "license": "GPL-3.0",
   "dependencies": {
     "filesize": "^11.0.25",
     "formidable": "^3.5.4",
@@ -33,7 +33,17 @@
     "@types/formidable": "^3.5.1",
     "@types/node": "^26.6.3",
     "@types/qrcode": "^1.5.6",
-    "tsdown": "^0.23.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vite-plus": "1.0.0"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": "11.19.1",
+      "onFail": "download"
+    }
   }
 }

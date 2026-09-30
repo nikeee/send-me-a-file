@@ -4,14 +4,12 @@
 		"module": "nodenext",
 		"esModuleInterop": true,
 		"moduleResolution": "nodenext",
-		"lib": [
-			"es2024"
-		],
+		"lib": ["es2024"],
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
 		"strict": true,
 		"noEmit": true,
 		"types": ["node", "filesize", "formidable", "qrcode"]
 	},
-	"include": ["src", "tsdown.config.ts"]
+	"include": ["src", "vite.config.ts"]
 }

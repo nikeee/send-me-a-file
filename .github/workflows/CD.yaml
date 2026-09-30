@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   build:
@@ -14,33 +14,33 @@ jobs:
       id-token: write
 
     steps:
-    - uses: actions/checkout@v7
-    - name: Use Node.js
-      uses: actions/setup-node@v7
-      with:
-        node-version: latest
-        registry-url: https://registry.npmjs.org/
-        cache: npm
+      - uses: actions/checkout@v7
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: latest
+          registry-url: https://registry.npmjs.org/
+          cache: npm
 
-    - run: npm ci
-    - run: npm run compile
-    - run: npm test
-      env:
-        CI: true
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+        env:
+          CI: true
 
-    - run: npm ci
-    - run: npm run compile
-    - run: npm publish --provenance --access public
-      env:
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish --provenance --access public
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
